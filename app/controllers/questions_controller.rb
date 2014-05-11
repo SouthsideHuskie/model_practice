@@ -55,8 +55,15 @@ class QuestionsController < ApplicationController
 #
     #@director_with_the_most_movies =  @most_number_of_movies_by_a_single_director
 
-    @director_with_the_most_movies = Director.order("movies.count DESC").first.director.name
+   movie_counts= {}
 
+   Director.all.each do |the_director|
+    movie_counts[the_director.movies] = the_director.movies.count
+
+  end
+
+
+    @director_with_the_most_movies = movie_counts
 
   end
 
