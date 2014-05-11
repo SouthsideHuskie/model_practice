@@ -43,27 +43,15 @@ class QuestionsController < ApplicationController
 
     # Your Ruby goes here.
 
-    #movie_counts = []
-#
-    #Director.all.each do |the_director|
-    #  number_of_movies_directed_by_the_director = the_director.movies.count
-#
-    #  movie_counts.push(number_of_movies_directed_by_the_director)
-    #end
-#
-    #@most_number_of_movies_by_a_single_director = movie_counts.max.
-#
-    #@director_with_the_most_movies =  @most_number_of_movies_by_a_single_director
+   the_leader = Director.new
 
-   movie_counts= {}
+     Director.all.each do |the_director|
+       if the_director.movies.count > the_leader.movies.count
+         the_leader = the_director
+      end
+   end
 
-   Director.all.each do |the_director|
-    movie_counts[the_director.movies] = the_director.movies.count
-
-  end
-
-
-    @director_with_the_most_movies = movie_counts
+     @director_with_the_most_movies = the_leader.name
 
   end
 
@@ -73,7 +61,15 @@ class QuestionsController < ApplicationController
 
     # Your Ruby goes here.
 
-    # @actor_with_the_most_movies =
+    top_actor = Actor.new
+
+    Actor.all.each do |the_actor|
+      if the_actor.movies.count > top_actor.movies.count
+        top_actor = the_actor
+      end
+
+    end
+    @actor_with_the_most_movies = top_actor.name
   end
 
   def question_5
@@ -84,8 +80,35 @@ class QuestionsController < ApplicationController
 
     # Your Ruby goes here.
 
-    # @actor = ???
+
+   # @actor = ???
     # @director = ???
-    # @movies_together = ???
-  end
-end
+     # @movies_together = ???
+
+     most_movies_together = 0
+     @actor = nil
+     @director = nil
+
+     Actor.all.each do |actor|
+       this_actors_most_movies_with_one_director = 0
+       this_actors_favorite_director = nil
+
+       actor.movies.each do |movie|
+         number_of_movies_with_same_director_as_this_one = actor.movies.where(:director_id => movie.director_id).count
+
+         if this_actors_most_movies_with_one_director < number_of_movies_with_same_director_as_this_one
+           this_actors_most_movies_with_one_director = number_of_movies_with_same_director_as_this_one
+           this_actors_favorite_director = movie.director
+         end
+       end
+
+       if most_movies_together < this_actors_most_movies_with_one_director
+         most_movies_together = this_actors_most_movies_with_one_director
+         @director = this_actors_favorite_director
+         @actor = actor
+       end
+     end
+
+     @movies_together = @actor.movies.where(:director_id => @director.id)
+   end
+ end
